@@ -1,5 +1,6 @@
 const getPrueba = (req, res) => {
-  res.send('hola')
+  console.log('hola mundo')
+  res.send('hola mundo')
 }
 
 export default {
