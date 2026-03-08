@@ -1,13 +1,17 @@
 import { Router } from 'express';
 import userController from '../controllers/user.controller.js';
 import validate from '../validators/validate.js';
-import { createSchema } from '../validators/user.validate.js';
+import { schema } from '../validators/user.validate.js';
+import { autentificateToken } from '../middlewares/authenticate.middleware.js';
 const router = Router();
 
 router.route('/')
     .get(userController.get)
-    .post(validate(createSchema), userController.create)
+    .post(validate(schema), userController.create)
 
 router.route('/:id')
-    .get(userController.find)
+    .get(autentificateToken, userController.find)
+    .put(autentificateToken, validate(schema), userController.update)
+    .patch(autentificateToken, userController.activeInactive)
+    .delete(autentificateToken, userController.eliminar)
 export default router
