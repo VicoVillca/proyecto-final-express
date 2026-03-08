@@ -8,6 +8,12 @@ export const sequelize = new Sequelize(
     {
         host: env.db_host,
         dialect: env.db_dialect,
-        logging: console.log
+        logging: console.log,
+        dialectOptions: env.db_use_ssl === 'true' ? {
+            ssl: {
+                require: true,
+                rejectUnauthorized: false
+            }
+        } : {}
     }
 )
