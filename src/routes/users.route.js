@@ -17,4 +17,6 @@ router.route('/:id')
 
 router.route('/:id/tasks')
     .get(autentificateToken, userController.getTasks)
+
+router.get('/list/pagination', userController.listWithPagination);
 export default router

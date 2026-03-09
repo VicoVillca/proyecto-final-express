@@ -3,6 +3,7 @@ import { Task } from '../models/task.js'
 import logger from '../logs/logger.js'
 import { encriptar } from '../common/bycript.js'
 import { Status } from '../constants/index.js'
+import { Op } from 'sequelize';
 
 async function create(req, res) {
   const { username, password } = req.body
@@ -127,6 +128,56 @@ const getTasks = async (req, res) => {
   }
 }
 
+async function listWithPagination(req, res) {
+  try {
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 10
+    const search = req.query.search || ''
+    const orderBy = req.query.orderBy || 'id'
+    const orderDir = req.query.orderDir || 'DESC'
+
+    const validLimits = [5, 10, 15, 20]
+    const finalLimit = validLimits.includes(limit) ? limit : 10
+
+    const validOrderBy = ['id', 'username', 'status']
+    const finalOrderBy = validOrderBy.includes(orderBy) ? orderBy : 'id'
+
+    const finalOrderDir = orderDir.toUpperCase() === 'ASC' ? 'ASC' : 'DESC'
+
+    const offset = (page - 1) * finalLimit
+
+    const whereConditions = {}
+
+    if (search) {
+      whereConditions.username = {
+        [Op.iLike]: `%${search}%`
+      }
+    }
+
+    const { count, rows } = await User.findAndCountAll({
+      attributes: ['id', 'username', 'status'],
+      where: whereConditions,
+      order: [[finalOrderBy, finalOrderDir]],
+      limit: finalLimit,
+      offset: offset
+    })
+
+    const totalPages = Math.ceil(count / finalLimit)
+
+    res.json({
+      total: count,
+      page: page,
+      pages: totalPages,
+      data: rows
+    })
+
+  } catch (error) {
+    res.status(500).json({ 
+      message: 'Error al obtener usuarios',
+      error: error.message 
+    })
+  }
+}
 
 export default {
   create,
@@ -135,5 +186,6 @@ export default {
   update,
   activeInactive,
   eliminar,
-  getTasks
+  getTasks,
+  listWithPagination
 }
