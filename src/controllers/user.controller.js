@@ -13,7 +13,7 @@ async function create(req, res) {
     })
     res.json(newUser)
   } catch (error) {
-    return res.json(error)
+    return res.json(error.message)
   }
 }
 
@@ -31,7 +31,7 @@ async function get(req, res) {
       data: users.rows
     })
   } catch (error) {
-    return res.json(error)
+    return res.json(error.message)
   }
 }
 
@@ -48,7 +48,7 @@ async function find(req, res) {
       return res.status(404).json({message: 'Usuario no encontrado'})
     res.json(user)
   } catch (error) {
-    return res.json(error)
+    return res.json(error.message)
   }
 }
 
@@ -66,7 +66,7 @@ async function update(req, res) {
     );
     return res.json(user)
   } catch (error) {
-    return res.json(error)
+    return res.json(error.message)
   }
 }
 
@@ -93,17 +93,18 @@ const activeInactive = async (req, res) => {
     await user.save();
     res.json(user)
   } catch (error) {
-    return res.json(error)
+    return res.json(error.message)
   }
 }
 
 const eliminar = async (req, res) => {
   const { id } = req.params;
   try {
+    await Task.destroy({ where: { userId: id } });
     await User.destroy({ where: { id } });
     return res.sendStatus(204);
   } catch (error) {
-    return res.json(error);
+    return res.json(error.message);
   }
 }
 

@@ -1,7 +1,9 @@
 import express from 'express';
 import morgan from 'morgan';
 import usersRoutes from './routes/users.route.js'
+import tasksRoutes from './routes/task.route.js'
 import authRoutes from './routes/auth.route.js'
+import { autentificateToken } from './middlewares/authenticate.middleware.js';
 const app = express();
 
 // Middlewares
@@ -10,6 +12,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/users', usersRoutes)
+app.use('/api/tasks', autentificateToken, tasksRoutes)
 
 app.use('/api/login', authRoutes)
 
