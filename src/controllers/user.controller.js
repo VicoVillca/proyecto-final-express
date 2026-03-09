@@ -108,6 +108,25 @@ const eliminar = async (req, res) => {
   }
 }
 
+const getTasks = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const user = await User.findOne({
+      attributes: ['username'],
+      include: [
+        {
+          model: Task,
+          attributes: ['name', 'done']
+        }
+      ],
+      where: { id },
+    });
+    res.json(user);
+  } catch (error) {
+    return res.json(error.message);
+  }
+}
+
 
 export default {
   create,
@@ -115,5 +134,6 @@ export default {
   find,
   update,
   activeInactive,
-  eliminar
+  eliminar,
+  getTasks
 }
